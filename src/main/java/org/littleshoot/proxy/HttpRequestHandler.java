@@ -863,18 +863,16 @@ public class HttpRequestHandler
     
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, 
-        final ExceptionEvent e) throws Exception {
-        final Channel channel = e.getChannel();
-        final Throwable cause = e.getCause();
+        final Throwable cause) throws Exception {
         if (cause instanceof ClosedChannelException) {
             log.warn("Caught an exception on browser to proxy channel: "+
-                channel, cause);
+                ctx.channel() , cause);
         }
         else {
             log.debug("Caught an exception on browser to proxy channel: "+
-                channel, cause);
+                ctx.channel() , cause);
         }
-        ProxyUtils.closeOnFlush(channel);
+        ProxyUtils.closeOnFlush(ctx.channel());
     }
 
     @Override
