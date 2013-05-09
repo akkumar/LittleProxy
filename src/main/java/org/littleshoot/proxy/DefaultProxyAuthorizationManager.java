@@ -95,6 +95,6 @@ public class DefaultProxyAuthorizationManager implements
             "the credentials required.</p>\n"+
             "</body></html>\n";
         log.info("Content-Length is really: "+responseBody.length());
-        ProxyUtils.writeResponse(ctx.getChannel(), statusLine, headers, responseBody);
+        ProxyUtils.writeResponse(ctx.channel(), statusLine, headers, responseBody);
     }
 }
