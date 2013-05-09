@@ -4,10 +4,12 @@ package org.littleshoot.proxy;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpChunk;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
@@ -55,8 +57,8 @@ import org.slf4j.LoggerFactory;
  * that same connection, i.e. it will send a request to host B once a request
  * to host A has completed.
  */
-public class HttpRequestHandler extends SimpleChannelUpstreamHandler 
-    implements RelayListener, ConnectionData {
+public class HttpRequestHandler  
+    implements RelayListener, ConnectionData, ChannelHandler {
 
     private final static Logger log = 
         LoggerFactory.getLogger(HttpRequestHandler.class);
@@ -255,8 +257,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx, 
-        final MessageEvent me) {
+    public void inboundBufferUpdated(final ChannelHandlerContext ctx) {
         if (browserChannelClosed.get()) {
             log.info("Ignoring message since the connection to the browser " +
                 "is about to close");
@@ -329,8 +330,8 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
         // happen if the client sends a chunk directly after the initial 
         // request.
 
-        if (this.currentChannelFuture.getChannel().isConnected()) {
-            this.currentChannelFuture.getChannel().write(chunk);
+        if (this.currentChannelFuture.channel().isConnected()) {
+            this.currentChannelFuture.channel().write(chunk);
         }
         else {
             this.currentChannelFuture.addListener(new ChannelFutureListener() {
@@ -338,7 +339,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
                 @Override
                 public void operationComplete(final ChannelFuture future) 
                     throws Exception {
-                    currentChannelFuture.getChannel().write(chunk);
+                    currentChannelFuture.channel().write(chunk);
                 }
             });
         }
@@ -397,7 +398,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
             public ChannelFuture onConnect(final ChannelFuture cf) {
                 if (request.getMethod() != HttpMethod.CONNECT) {
                     final ChannelFuture writeFuture = 
-                        cf.getChannel().write(request);
+                        cf.channel().write(request);
                     writeFuture.addListener(new ChannelFutureListener() {
                         
                         @Override
@@ -413,7 +414,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
                     return writeFuture;
                 }
                 else {
-                    writeConnectResponse(ctx, request, cf.getChannel());
+                    writeConnectResponse(ctx, request, cf.channel());
                     return cf;
                 }
             }
@@ -431,7 +432,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
                 log.error("Should not be null here");
             }
             this.currentChannelFuture = curFuture;
-            if (curFuture.getChannel().isConnected()) {
+            if (curFuture.channel().isConnected()) {
                 onConnect.onConnect(curFuture);
             }
             else {
@@ -448,14 +449,14 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
         else {
             log.debug("Establishing new connection");
             final ChannelFuture cf;
-            ctx.getChannel().setReadable(false);
+            ctx.channel().setReadable(false);
             try {
                 cf = newChannelFuture(request, inboundChannel, hostAndPort);
             } catch (final UnknownHostException e) {
                 log.warn("Could not resolve host?", e);
                 badGateway(request, inboundChannel);
                 handleFutureChunksIfNecessary(request);
-                ctx.getChannel().setReadable(true);
+                ctx.channel().setReadable(true);
                 return;
             }
             
@@ -470,7 +471,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
                 @Override
                 public void operationComplete(final ChannelFuture future)
                     throws Exception {
-                    final Channel channel = future.getChannel();
+                    final Channel channel = future.channel();
                     if (channelGroup != null) {
                         channelGroup.add(channel);
                     }
@@ -486,7 +487,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
                                     request.getMethod()+" "+
                                     request.getUri());
                                 
-                                ctx.getChannel().setReadable(true);
+                                ctx.channel().setReadable(true);
                                 log.debug("Channel is readable: {}", 
                                     channel.isReadable());
                             }
@@ -588,7 +589,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
             final ChannelFuture cf = futures.remove();
 
             if (cf != null && cf.isSuccess() && 
-                !cf.getChannel().isConnected()) {
+                !cf.channel().isConnected()) {
                 // In this case, the future successfully connected at one
                 // time, but we're no longer connected. We need to remove the
                 // channel and open a new one.
@@ -602,7 +603,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
     private void writeConnectResponse(final ChannelHandlerContext ctx, 
         final HttpRequest httpRequest, final Channel outgoingChannel) {
         final int port = ProxyUtils.parsePort(httpRequest);
-        final Channel browserToProxyChannel = ctx.getChannel();
+        final Channel browserToProxyChannel = ctx.channel();
         
         // TODO: We should really only allow access on 443, but this breaks
         // what a lot of browsers do in practice.
@@ -778,7 +779,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler
             synchronized (allChannelFutures) {
                 for (final ChannelFuture cf : allChannelFutures) {
                     log.debug("Closing future...");
-                    cf.getChannel().close();
+                    cf.channel().close();
                 }
                 allChannelFutures.clear();
             }
