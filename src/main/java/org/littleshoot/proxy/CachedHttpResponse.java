@@ -1,5 +1,6 @@
 package org.littleshoot.proxy;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
 
 
@@ -13,7 +14,7 @@ public interface CachedHttpResponse {
      * 
      * @return The raw data for the response.
      */
-    ChannelBuffer getChannelBuffer();
+    ByteBuf getChannelBuffer();
 
     /**
      * Accessor for the listener for once the response is written. This will

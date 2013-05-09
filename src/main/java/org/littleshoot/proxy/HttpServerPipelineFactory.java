@@ -1,6 +1,11 @@
 package org.littleshoot.proxy;
 
-import static org.jboss.netty.channel.Channels.pipeline;
+
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.Timer;
 
 import java.lang.management.ManagementFactory;
 
@@ -11,13 +16,6 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
-import org.jboss.netty.handler.timeout.IdleStateHandler;
-import org.jboss.netty.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

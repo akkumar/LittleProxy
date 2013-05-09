@@ -1,5 +1,6 @@
 package org.littleshoot.proxy;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
@@ -105,7 +106,7 @@ public class DefaultProxyCacheManager implements ProxyCacheManager {
     
     public Future<String> cache(final HttpRequest httpRequest, 
         final HttpResponse httpResponse, final Object response, 
-        final ChannelBuffer encoded) {
+        final ByteBuf encoded) {
         
         // We can't depend on the write position and such of the
         // original buffer, so make a duplicate.

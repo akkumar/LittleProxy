@@ -1,5 +1,6 @@
 package org.littleshoot.proxy;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.HttpChunk;
 
@@ -21,7 +22,7 @@ public class DefaultCachedHttpChunks implements CachedHttpChunks {
         return false;
     }
 
-    public void cache(HttpChunk chunk, ChannelBuffer encoded) {
+    public void cache(HttpChunk chunk, ByteBuf encoded) {
         // TODO Auto-generated method stub
         
     }

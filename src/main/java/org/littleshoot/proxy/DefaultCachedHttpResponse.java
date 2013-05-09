@@ -1,5 +1,6 @@
 package org.littleshoot.proxy;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
 
 
@@ -8,7 +9,7 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class DefaultCachedHttpResponse implements CachedHttpResponse {
 
-    private final ChannelBuffer channelBuffer;
+    private final ByteBuf channelBuffer;
     private final ChannelFutureListener channelFutureListener;
 
     /**
@@ -18,13 +19,13 @@ public class DefaultCachedHttpResponse implements CachedHttpResponse {
      * @param channelFutureListener The class for listening to write events
      * that takes appropriate actions such as closing the connection.
      */
-    public DefaultCachedHttpResponse(final ChannelBuffer channelBuffer,
+    public DefaultCachedHttpResponse(final ByteBuf channelBuffer,
         final ChannelFutureListener channelFutureListener) {
         this.channelBuffer = channelBuffer;
         this.channelFutureListener = channelFutureListener;
     }
 
-    public ChannelBuffer getChannelBuffer() {
+    public ByteBuf getChannelBuffer() {
         // We can never return the original buffer because multiple threads 
         // could then access it and modify the mutable data.
         // NOTE: This does not copy the actual bytes.
