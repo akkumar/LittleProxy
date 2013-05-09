@@ -489,7 +489,7 @@ public class HttpRelayingHandler
     public void exceptionCaught(final ChannelHandlerContext ctx, 
         final Throwable cause) throws Exception {
         final String message = 
-            "Caught exception on proxy -> web connection: "+e.getChannel();
+            "Caught exception on proxy -> web connection: "+ctx.channel();
         final boolean warn;
         if (cause != null) {
             final String msg = cause.getMessage();
@@ -506,13 +506,13 @@ public class HttpRelayingHandler
         } else {
             log.debug(message, cause);
         }
-        if (e.getChannel().isConnected()) {
+        if (ctx.channel().isConnected()) {
             if (warn) {
                 log.warn("Closing open connection");
             } else {
                 log.debug("Closing open connection");
             }
-            ProxyUtils.closeOnFlush(e.getChannel());
+            ProxyUtils.closeOnFlush(ctx.channel());
         }
         // This can happen if we couldn't make the initial connection due
         // to something like an unresolved address, for example, or a timeout.

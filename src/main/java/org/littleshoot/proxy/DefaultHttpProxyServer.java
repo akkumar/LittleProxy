@@ -3,9 +3,14 @@ package org.littleshoot.proxy;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 
@@ -318,6 +323,28 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
     public void start(final boolean localOnly, final boolean anyAddress) {
         log.info("Starting proxy on port: "+this.port);
         this.stopped.set(false);
+        try {
+          serverBootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
+           .channel(new NioServerSocketChannel())
+           .option(ChannelOption.SO_BACKLOG, 100)
+           .localAddress(8080)
+           .childOption(ChannelOption.TCP_NODELAY, true)
+           .childHandler(new ChannelInitializer<SocketChannel>() {
+               @Override
+               public void initChannel(SocketChannel ch) throws Exception {
+                   ch.pipeline().addLast(handler1, handler2);
+               }
+           });
+   
+          // Start the server.
+          ChannelFuture f = serverBootstrap.bind().sync();
+   
+          // Wait until the server socket is closed.
+          f.channel().closeFuture().sync();
+      } finally {
+          // Shut down all event loops to terminate all threads.
+        serverBootstrap.shutdown();
+      }        
         final HttpServerPipelineFactory factory = 
             new HttpServerPipelineFactory(authenticationManager, 
                 this.allChannels, this.chainProxyManager, 
