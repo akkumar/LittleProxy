@@ -5,6 +5,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -48,10 +49,10 @@ public class DefaultProxyCacheManagerTest {
 
         //TODO:  The test is @Ignored so this mocks are not tested
         final Channel channel = mock(Channel.class);
-        when(channel.getConfig()).thenReturn(new DefaultChannelConfig());
+        when(channel.config()).thenReturn(new DefaultChannelConfig());
         when(channel.write(any())).thenReturn(mock(ChannelFuture.class));
 
-        final ChannelBuffer encoded = (ChannelBuffer) encoder.pubEncode(null, channel, httpResponse);
+        final ByteBuf encoded = (ByteBuf) encoder.pubEncode(null, channel, httpResponse);
         final Future<String> future = cm.cache(httpRequest, httpResponse, httpResponse, encoded);
         
         assertNotNull("No future?", future);

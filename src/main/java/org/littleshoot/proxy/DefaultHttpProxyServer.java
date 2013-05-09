@@ -327,7 +327,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
           serverBootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
            .channel(new NioServerSocketChannel())
            .option(ChannelOption.SO_BACKLOG, 100)
-           .localAddress(8080)
+           .localAddress(port)
            .childOption(ChannelOption.TCP_NODELAY, true)
            .childHandler(new ChannelInitializer<SocketChannel>() {
                @Override
@@ -418,7 +418,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
         }
         log.info("Stopping timer");
         timer.stop();
-        serverChannelFactory.releaseExternalResources();
+        serverBootstrap.releaseExternalResources();
         clientChannelFactory.releaseExternalResources();
         
         log.info("Done shutting down proxy");

@@ -54,7 +54,7 @@ public class HttpConnectRelayingHandler implements ChannelHandler {
     public void messageReceived(final ChannelHandlerContext ctx, 
         final MessageEvent e) throws Exception {
         final ChannelBuffer msg = (ChannelBuffer) e.getMessage();
-        if (relayChannel.isConnected()) {
+        if (relayChannel.isOpen()) {
             final ChannelFutureListener logListener = 
                 new ChannelFutureListener() {
                 public void operationComplete(final ChannelFuture future) 
@@ -66,7 +66,7 @@ public class HttpConnectRelayingHandler implements ChannelHandler {
         }
         else {
             LOG.info("Channel not open. Connected? {}", 
-                relayChannel.isConnected());
+                relayChannel.isOpen());
             // This will undoubtedly happen anyway, but just in case.
             ProxyUtils.closeOnFlush(e.getChannel());
         }
