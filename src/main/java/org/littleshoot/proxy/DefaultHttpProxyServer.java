@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 
 import java.lang.Thread.UncaughtExceptionHandler;
