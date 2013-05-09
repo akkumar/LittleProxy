@@ -1,11 +1,8 @@
 package org.littleshoot.proxy;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.handler.codec.http.HttpChunk;
-import org.jboss.netty.handler.codec.http.HttpRequest;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.HttpChunk;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,8 +1,9 @@
 package org.littleshoot.proxy;
 
+import io.netty.handler.ssl.SslHandler;
+
 import javax.net.ssl.SSLEngine;
 
-import org.jboss.netty.handler.ssl.SslHandler;
 
 public class SslHandshakeHandlerFactory implements HandshakeHandlerFactory {
 

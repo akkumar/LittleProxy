@@ -140,10 +140,10 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty</artifactId>
-      <version>3.6.5.Final</version>
+      <version>4.0.0.Alpha8</version>
       <scope>compile</scope>
     </dependency>
-
+            
     <dependency>
       <groupId>org.littleshoot</groupId>
       <artifactId>dnssec4j</artifactId>

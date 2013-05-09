@@ -3,8 +3,8 @@ package org.littleshoot.proxy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import io.netty.handler.codec.http.HttpRequest;
 
-import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.junit.Test;
 
 /**

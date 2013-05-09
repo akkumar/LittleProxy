@@ -1,11 +1,11 @@
 package org.littleshoot.proxy;
 
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+
 import java.util.concurrent.Future;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
 
 /**
  * Interface for classes that handle caching on the proxy.

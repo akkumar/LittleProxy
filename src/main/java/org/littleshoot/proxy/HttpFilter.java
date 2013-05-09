@@ -1,7 +1,8 @@
 package org.littleshoot.proxy;
 
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+
 
 /**
  * Interface for rules for filtering HTTP traffic.
