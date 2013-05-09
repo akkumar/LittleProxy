@@ -1,5 +1,6 @@
 package org.littleshoot.proxy;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
@@ -22,7 +23,7 @@ class SimpleProxyCacheManager implements ProxyCacheManager {
 
     public Future<String> cache(HttpRequest originalRequest,
             HttpResponse httpResponse,
-            Object response, ChannelBuffer encoded) {
+            Object response, ByteBuf encoded) {
         
         return null;
     }

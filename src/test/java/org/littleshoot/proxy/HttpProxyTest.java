@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpVersion;
 
 import java.io.ByteArrayInputStream;
@@ -64,13 +67,13 @@ public class HttpProxyTest {
         try {
             final byte[] baseResponse = rawResponse("i.i.com.com", 80, true, HttpVersion.HTTP_1_0);
             final byte[] proxyResponse = rawResponse("127.0.0.1", 8080, false, HttpVersion.HTTP_1_1);
-            final ChannelBuffer wrappedBase = ChannelBuffers.wrappedBuffer(baseResponse);
-            final ChannelBuffer wrappedProxy = ChannelBuffers.wrappedBuffer(proxyResponse);
+            final ByteBuf wrappedBase = Unpooled.wrappedBuffer(baseResponse);
+            final ByteBuf wrappedProxy = Unpooled.wrappedBuffer(proxyResponse);
     
             assertEquals("Lengths not equal", wrappedBase.capacity(), wrappedProxy.capacity());
             assertEquals("Not equal:\n"+
-                ChannelBuffers.hexDump(wrappedBase)+"\n\n\n"+
-                ChannelBuffers.hexDump(wrappedProxy), wrappedBase, wrappedProxy);
+                ByteBufUtil.hexDump(wrappedBase)+"\n\n\n"+
+                ByteBufUtil.hexDump(wrappedProxy), wrappedBase, wrappedProxy);
     
             final ByteArrayInputStream baseBais = new ByteArrayInputStream(baseResponse);
             //final String baseStr = IOUtils.toString(new GZIPInputStream(baseBais));
@@ -421,9 +424,9 @@ public class HttpProxyTest {
             final byte[] crlf = new byte[2];
             crlf[0] = (byte) cr;
             crlf[1] = (byte) lf;
-            final ChannelBuffer buf = ChannelBuffers.wrappedBuffer(crlf);
+            final ByteBuf buf = Unpooled.wrappedBuffer(crlf);
             throw new Error("Did not get expected CRLF!! Instead got hex: "+
-                ChannelBuffers.hexDump(buf)+" and str: "+buf.toString("US-ASCII"));
+                ByteBufUtil.hexDump(buf)+" and str: "+buf.toString("US-ASCII"));
         }
     }
 
@@ -437,8 +440,8 @@ public class HttpProxyTest {
             if (lastCr && curChar == '\n') {
                 final String line = curLine.toString();
                 final byte[] bytes = line.getBytes();
-                final ChannelBuffer buf = ChannelBuffers.wrappedBuffer(bytes);
-                System.out.println("BUF IN HEX: "+ChannelBuffers.hexDump(buf));
+                final ByteBuf buf = Unpooled.wrappedBuffer(bytes);
+                System.out.println("BUF IN HEX: "+ByteBufUtil.hexDump(buf));
                 if (StringUtils.isBlank(line)) {
                     return 0;
                 }
