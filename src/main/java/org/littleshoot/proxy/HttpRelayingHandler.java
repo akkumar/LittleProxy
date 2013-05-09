@@ -3,9 +3,11 @@ package org.littleshoot.proxy;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpChunk;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
@@ -22,8 +24,8 @@ import org.slf4j.LoggerFactory;
  * Class that simply relays traffic from a remote server the proxy is 
  * connected to back to the browser/client.
  */
-public class HttpRelayingHandler extends SimpleChannelUpstreamHandler 
-    implements InterestOpsListener {
+public class HttpRelayingHandler  
+    implements InterestOpsListener, ChannelHandler {
     
     private final Logger log = LoggerFactory.getLogger(getClass());
     
@@ -485,8 +487,7 @@ public class HttpRelayingHandler extends SimpleChannelUpstreamHandler
 
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, 
-        final ExceptionEvent e) throws Exception {
-        final Throwable cause = e.getCause();
+        final Throwable cause) throws Exception {
         final String message = 
             "Caught exception on proxy -> web connection: "+e.getChannel();
         final boolean warn;

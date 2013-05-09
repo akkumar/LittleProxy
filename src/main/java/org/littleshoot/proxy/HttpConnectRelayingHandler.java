@@ -3,6 +3,7 @@ package org.littleshoot.proxy;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * another channel passed in to the constructor.
  */
 @Sharable
-public class HttpConnectRelayingHandler extends SimpleChannelUpstreamHandler {
+public class HttpConnectRelayingHandler implements ChannelHandler {
     
     private static final Logger LOG = 
         LoggerFactory.getLogger(HttpConnectRelayingHandler.class);
@@ -89,9 +90,9 @@ public class HttpConnectRelayingHandler extends SimpleChannelUpstreamHandler {
 
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, 
-        final ExceptionEvent e) throws Exception {
+        final Throwable cause) throws Exception {
         LOG.info("Caught exception on proxy -> web connection: "+
-            e.getChannel(), e.getCause());
-        ProxyUtils.closeOnFlush(e.getChannel());
+            ctx.channel(), cause);
+        ProxyUtils.closeOnFlush(ctx.channel());
     }
 }
